@@ -40,7 +40,7 @@ class Button:
             return True
         return False
 
-
+#Start screen loop __________________________________
 
 def startScreen():
     global state, difficulty
@@ -73,3 +73,4 @@ def startScreen():
         pygame.display.flip()
 startScreen()
 
+#Main Game Loop________________________________________________
