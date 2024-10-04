@@ -9,3 +9,5 @@ class Paddle:
             if self.rect.left > (0+self.speed): self.rect.x -= self.speed
         if key == pygame.K_d or key == pygame.K_RIGHT:
             if self.rect.left < (self.screenWidth+self.speed): self.rect.x += self.speed
+    def display(self, screen):
+        screen.blit(self.rect)
