@@ -70,7 +70,20 @@ def startScreen():
 
 #Main Game Loop________________________________________________
 def gameLoop(difficulty):
-    global state
+    global state, xScale, yScale
+    offsetFromBottom = 100*yScale #Offset of paddle from bottom of screen (Like everything else this will be scaled)
+    paddleWidth, paddleHeight = 100 * xScale, 25*xScale 
+    paddle = Paddle((screenLength/2)-(paddleWidth/2),screenHeight-offsetFromBottom, paddleWidth, paddleHeight, WHITE, 10*xScale, screenLength ) #x, y, width, height, color, speed, screenWidth
     while state == "Main":
-        return
+        screen.fill(BLACK)
+        #Paddle movement and display
+        paddle.move()
+        paddle.display(screen)
+        #Events checker
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                state = "Quit"
+
+        clock.tick(100)
+        pygame.display.flip()
 startScreen()

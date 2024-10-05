@@ -4,10 +4,11 @@ class Paddle:
         self.rect = pygame.Rect(x,y,width, height)
         self.color = color
         self.speed, self.screenWidth = speed, screenWidth
-    def move(self, key):
-        if key == pygame.K_a or key == pygame.K_LEFT:
+    def move(self):
+        keysPressed = pygame.key.get_pressed()
+        if keysPressed[pygame.K_a] or keysPressed[pygame.K_LEFT]:
             if self.rect.left > (0+self.speed): self.rect.x -= self.speed
-        if key == pygame.K_d or key == pygame.K_RIGHT:
-            if self.rect.left < (self.screenWidth+self.speed): self.rect.x += self.speed
+        if keysPressed[pygame.K_b] or keysPressed[pygame.K_RIGHT]:
+            if self.rect.left+self.rect.width < (self.screenWidth-self.speed): self.rect.x += self.speed
     def display(self, screen):
-        screen.blit(self.rect)
+        pygame.draw.rect(screen, self.color, self.rect)
