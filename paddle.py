@@ -12,3 +12,5 @@ class Paddle:
             if self.rect.left+self.rect.width < (self.screenWidth-self.speed): self.rect.x += self.speed
     def display(self, screen):
         pygame.draw.rect(screen, self.color, self.rect)
+    def getRect(self):
+        return pygame.Rect(self.rect.x,self.rect.y,self.rect.width,self.rect.height)

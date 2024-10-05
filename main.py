@@ -1,16 +1,17 @@
 import pygame
 from button import Button
 from paddle import Paddle
+from ball import Ball
 pygame.init()
 #Initialize Shit
-screenHeight, screenLength = 1000, 800
-screen = pygame.display.set_mode((screenLength, screenHeight))
+screenHeight, screenWidth = 1000, 800
+screen = pygame.display.set_mode((screenWidth, screenHeight))
 clock = pygame.time.Clock()
 state = "Start"
 #Colors!
 WHITE, BLACK, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA, GRAY, ORANGE, PURPLE, BROWN = (255, 255, 255), (0, 0, 0), (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (0, 255, 255), (255, 0, 255), (128, 128, 128), (255, 165, 0), (128, 0, 128), (165, 42, 42)
 #Calculate scale difference based on distance from default size (1000, 800)
-xScale, yScale = screenLength/1000, screenHeight/800
+xScale, yScale = screenWidth/1000, screenHeight/800
 
 
 # Calculate font size dynamically based on screen height (GPT code)
@@ -35,15 +36,15 @@ def startScreen():
     titleFont = get_scaled_font(100)
     buttonFont = get_scaled_font(90)
     #init buttons
-    easyButton = Button("Easy", buttonFont, (screenLength//2, 3*screenHeight//6), WHITE, BLACK)
-    mediumButton = Button("Medium", buttonFont, (screenLength//2, 4*screenHeight//6), WHITE, BLACK)
-    hardButton = Button("Hard", buttonFont, (screenLength//2, 5*screenHeight//6), WHITE, BLACK)
+    easyButton = Button("Easy", buttonFont, (screenWidth//2, 3*screenHeight//6), WHITE, BLACK)
+    mediumButton = Button("Medium", buttonFont, (screenWidth//2, 4*screenHeight//6), WHITE, BLACK)
+    hardButton = Button("Hard", buttonFont, (screenWidth//2, 5*screenHeight//6), WHITE, BLACK)
 
     while state == "Start":
         #Fill screen w color
         screen.fill(WHITE)
         #Draw text and buttons
-        draw_text("Brick Breaker!", titleFont, screenLength//2, screenHeight//5, BLACK)
+        draw_text("Brick Breaker!", titleFont, screenWidth//2, screenHeight//5, BLACK)
         easyButton.draw(screen)
         mediumButton.draw(screen)
         hardButton.draw(screen)
@@ -73,12 +74,18 @@ def gameLoop(difficulty):
     global state, xScale, yScale
     offsetFromBottom = 100*yScale #Offset of paddle from bottom of screen (Like everything else this will be scaled)
     paddleWidth, paddleHeight = 100 * xScale, 25*xScale 
-    paddle = Paddle((screenLength/2)-(paddleWidth/2),screenHeight-offsetFromBottom, paddleWidth, paddleHeight, WHITE, 10*xScale, screenLength ) #x, y, width, height, color, speed, screenWidth
+    paddle = Paddle((screenWidth/2)-(paddleWidth/2),screenHeight-offsetFromBottom, paddleWidth, paddleHeight, WHITE, 10*xScale, screenWidth ) #x, y, width, height, color, speed, screenWidth
+    ballRad = 15* (xScale+yScale)/2
+    ball = Ball((screenWidth/2)-(paddleWidth/2),screenHeight-(offsetFromBottom*2), ballRad, BLUE, screenWidth, screenHeight)
     while state == "Main":
         screen.fill(BLACK)
         #Paddle movement and display
         paddle.move()
         paddle.display(screen)
+        #Ball movement and display
+        ball.collision(paddle)
+        ball.move()
+        ball.display(screen)
         #Events checker
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
