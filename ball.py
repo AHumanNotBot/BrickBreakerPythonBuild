@@ -1,9 +1,9 @@
 import pygame
 class Ball:
-    def __init__(self, x, y, radius, color, screenWidth, screenHeight) -> None:
+    def __init__(self, x, y, radius, color, screenScaleX, screenScaleY) -> None:
         self.pos, self.radius = (x,y), radius
-        self.color, self.screenWidth, self.screenHeight = color, screenWidth, screenHeight
-        self.xVelocity, self.yVelocity = 5, -10
+        self.color, self.screenWidth, self.screenHeight = color, screenScaleX*1000, screenScaleY*800
+        self.xVelocity, self.yVelocity = 5*screenScaleX, -10*screenScaleY
     def display(self, screen):
         pygame.draw.circle(screen, self.color, self.pos, self.radius)
     def move(self):

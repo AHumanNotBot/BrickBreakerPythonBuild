@@ -76,7 +76,7 @@ def gameLoop(difficulty):
     paddleWidth, paddleHeight = 100 * xScale, 25*xScale 
     paddle = Paddle((screenWidth/2)-(paddleWidth/2),screenHeight-offsetFromBottom, paddleWidth, paddleHeight, WHITE, 10*xScale, screenWidth ) #x, y, width, height, color, speed, screenWidth
     ballRad = 15* (xScale+yScale)/2
-    ball = Ball((screenWidth/2)-(paddleWidth/2),screenHeight-(offsetFromBottom*2), ballRad, BLUE, screenWidth, screenHeight)
+    ball = Ball((screenWidth/2)-(paddleWidth/2),screenHeight-(offsetFromBottom*2), ballRad, BLUE, xScale, yScale)
     while state == "Main":
         screen.fill(BLACK)
         #Paddle movement and display
