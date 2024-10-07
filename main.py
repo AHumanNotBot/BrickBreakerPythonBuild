@@ -2,6 +2,7 @@ import pygame
 from button import Button
 from paddle import Paddle
 from ball import Ball
+from brick import Brick
 pygame.init()
 #Initialize Shit
 screenHeight, screenWidth = 1000, 800
@@ -11,8 +12,7 @@ state = "Start"
 #Colors!
 WHITE, BLACK, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA, GRAY, ORANGE, PURPLE, BROWN = (255, 255, 255), (0, 0, 0), (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (0, 255, 255), (255, 0, 255), (128, 128, 128), (255, 165, 0), (128, 0, 128), (165, 42, 42)
 #Calculate scale difference based on distance from default size (1000, 800)
-xScale, yScale = screenWidth/1000, screenHeight/800
-
+xScale, yScale = screenWidth/800, screenHeight/1000
 
 # Calculate font size dynamically based on screen height (GPT code)
 def get_scaled_font(scale_factor=10):
@@ -26,7 +26,21 @@ def draw_text(text: str, font: pygame.font.Font, x: int, y: int, color: tuple, r
     if rect:
         rectObj = pygame.draw.rect(screen, rectColor, rectCoords, rectCoords.width)
     screen.blit(textObj, rectCoords)
-#Button class
+#Generate bricks
+def generateBricks(difficulty):
+    global xScale, yScale
+    bricks = []
+    color = RED
+    borderCol = WHITE
+    if difficulty == "Easy": numBricks = 32
+    elif difficulty == "Medium": numBricks = 48
+    elif difficulty == "Hard": numBricks = 64
+    #collumbs = 10 rows depend on numBricks
+    for i in range(numBricks//8):
+        for j in range(8):
+            bricks.append(Brick((j*100*xScale)+(2*xScale), (i*50*yScale)+(5*yScale*i), 92*xScale, 50*yScale, color, borderCol))
+    return bricks
+
 
 
 #Start screen loop __________________________________
@@ -77,6 +91,7 @@ def gameLoop(difficulty):
     paddle = Paddle((screenWidth/2)-(paddleWidth/2),screenHeight-offsetFromBottom, paddleWidth, paddleHeight, WHITE, 10*xScale, screenWidth ) #x, y, width, height, color, speed, screenWidth
     ballRad = 15* (xScale+yScale)/2
     ball = Ball((screenWidth/2)-(paddleWidth/2),screenHeight-(offsetFromBottom*2), ballRad, BLUE, xScale, yScale)
+    bricks = generateBricks(difficulty)
     while state == "Main":
         screen.fill(BLACK)
         #Paddle movement and display
@@ -86,6 +101,12 @@ def gameLoop(difficulty):
         ball.collision(paddle)
         ball.move()
         ball.display(screen)
+        for brick in bricks:
+            if brick.exists:
+                brick.display(screen)
+                if brick.collision(ball): 
+                    ball.bounce()
+                    brick.exists = False
         #Events checker
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
