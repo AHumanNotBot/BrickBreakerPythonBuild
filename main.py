@@ -9,6 +9,7 @@ screenHeight, screenWidth = 1000, 800
 screen = pygame.display.set_mode((screenWidth, screenHeight))
 clock = pygame.time.Clock()
 state = "Start"
+ballSpeed = 10
 #Colors!
 WHITE, BLACK, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA, GRAY, ORANGE, PURPLE, BROWN = (255, 255, 255), (0, 0, 0), (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (0, 255, 255), (255, 0, 255), (128, 128, 128), (255, 165, 0), (128, 0, 128), (165, 42, 42)
 #Calculate scale difference based on distance from default size (1000, 800)
@@ -87,17 +88,37 @@ def startScreen():
 
 #Settings Screen loop______________________
 def settings():
+    global state, ballSpeed
     buttonFont = get_scaled_font(75)
     prevSize = Button("<", buttonFont, (200*xScale, 200*yScale), WHITE, BLACK)
     nextSize = Button(">", buttonFont, (600*xScale, 200*yScale), WHITE, BLACK)
-    
+    decSpeed = Button("<", buttonFont, (200*xScale, 400*yScale), WHITE, BLACK)
+    incSpeed = Button(">", buttonFont, (600*xScale, 400*yScale), WHITE, BLACK)
+    apply = Button("Apply", buttonFont, (400*xScale, 600*yScale), WHITE, BLACK)
+    while state == "Settings":
+        screen.fill(WHITE)
+        prevSize.draw(screen)
+        nextSize.draw(screen)
+        decSpeed.draw(screen)
+        incSpeed.draw(screen)
+        apply.draw(screen)
+        draw_text("{} x {}".format(screenWidth, screenHeight), buttonFont, 400*xScale, 200*yScale, BLACK, True)
+        draw_text("Ball Speed: {}".format(ballSpeed), buttonFont, 400*xScale, 400*yScale, BLACK, True)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                state = "Quit"
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if apply.isClicked(event): 
+                    state = "Start"
+                    startScreen()                
+        pygame.display.flip()
 #Main Game Loop________________________________________________
 def gameLoop(difficulty):
-    global state, xScale, yScale
+    global state, xScale, yScale, ballSpeed
     #Generate Original ball and paddle 
     offsetFromBottom = 100*yScale #Offset of paddle from bottom of screen (Like everything else this will be scaled)
     paddleWidth, paddleHeight = 100 * xScale, 25*xScale 
-    paddle = Paddle((screenWidth/2)-(paddleWidth/2),screenHeight-offsetFromBottom, paddleWidth, paddleHeight, WHITE, 10*xScale, screenWidth ) #x, y, width, height, color, speed, screenWidth
+    paddle = Paddle((screenWidth/2)-(paddleWidth/2),screenHeight-offsetFromBottom, paddleWidth, paddleHeight, WHITE, ballSpeed*xScale, screenWidth ) #x, y, width, height, color, speed, screenWidth
     ballRad = 15* (xScale+yScale)/2
     ball = Ball((screenWidth/2)-(paddleWidth/2),screenHeight-(offsetFromBottom*2), ballRad, BLUE, xScale, yScale)
     bricks = generateBricks(difficulty)
