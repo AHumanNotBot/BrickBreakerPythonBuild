@@ -1,9 +1,9 @@
 import pygame
 class Ball:
-    def __init__(self, x, y, radius, color, screenScaleX, screenScaleY, exists = True) -> None:
+    def __init__(self, x, y, radius, color, screenScaleX, screenScaleY, speed, exists = True) -> None:
         self.pos, self.radius = (x,y), radius
         self.color, self.screenWidth, self.screenHeight = color, screenScaleX*800, screenScaleY*1000
-        self.xVelocity, self.yVelocity = 5*screenScaleX, -10*screenScaleY
+        self.xVelocity, self.yVelocity = (speed/2)*screenScaleX, -speed*screenScaleY
         self.exists = exists
     def display(self, screen):
         pygame.draw.circle(screen, self.color, self.pos, self.radius)

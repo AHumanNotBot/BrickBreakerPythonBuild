@@ -90,19 +90,14 @@ def startScreen():
 def settings():
     global state, ballSpeed
     buttonFont = get_scaled_font(75)
-    prevSize = Button("<", buttonFont, (200*xScale, 200*yScale), WHITE, BLACK)
-    nextSize = Button(">", buttonFont, (600*xScale, 200*yScale), WHITE, BLACK)
     decSpeed = Button("<", buttonFont, (200*xScale, 400*yScale), WHITE, BLACK)
     incSpeed = Button(">", buttonFont, (600*xScale, 400*yScale), WHITE, BLACK)
     apply = Button("Apply", buttonFont, (400*xScale, 600*yScale), WHITE, BLACK)
     while state == "Settings":
         screen.fill(WHITE)
-        prevSize.draw(screen)
-        nextSize.draw(screen)
         decSpeed.draw(screen)
         incSpeed.draw(screen)
         apply.draw(screen)
-        draw_text("{} x {}".format(screenWidth, screenHeight), buttonFont, 400*xScale, 200*yScale, BLACK, True)
         draw_text("Ball Speed: {}".format(ballSpeed), buttonFont, 400*xScale, 400*yScale, BLACK, True)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -110,7 +105,11 @@ def settings():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if apply.isClicked(event): 
                     state = "Start"
-                    startScreen()                
+                    startScreen()
+                if incSpeed.isClicked(event):
+                    ballSpeed += 1
+                if decSpeed.isClicked(event):
+                    ballSpeed-=1                
         pygame.display.flip()
 #Main Game Loop________________________________________________
 def gameLoop(difficulty):
@@ -120,7 +119,7 @@ def gameLoop(difficulty):
     paddleWidth, paddleHeight = 100 * xScale, 25*xScale 
     paddle = Paddle((screenWidth/2)-(paddleWidth/2),screenHeight-offsetFromBottom, paddleWidth, paddleHeight, WHITE, ballSpeed*xScale, screenWidth ) #x, y, width, height, color, speed, screenWidth
     ballRad = 15* (xScale+yScale)/2
-    ball = Ball((screenWidth/2)-(paddleWidth/2),screenHeight-(offsetFromBottom*2), ballRad, BLUE, xScale, yScale)
+    ball = Ball((screenWidth/2)-(paddleWidth/2),screenHeight-(offsetFromBottom*2), ballRad, BLUE, xScale, yScale, ballSpeed)
     bricks = generateBricks(difficulty)
     #Set lives value
     if difficulty == "Easy": lives = 5
@@ -142,7 +141,7 @@ def gameLoop(difficulty):
             ball.display(screen)
         else:
             lives-=1
-            ball = Ball((screenWidth/2)-(paddleWidth/2),screenHeight-(offsetFromBottom*2), ballRad, BLUE, xScale, yScale)
+            ball = Ball((screenWidth/2)-(paddleWidth/2),screenHeight-(offsetFromBottom*2), ballRad, BLUE, xScale, yScale, ballSpeed)
         #disp lives:
         draw_text("Lives: {}".format(lives), livesFont, 100*xScale, 950*yScale, WHITE)
         #Check if they are ded:
