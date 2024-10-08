@@ -175,7 +175,7 @@ def endScreen():
     while state == "Lost" or state == "Win":
         screen.fill(GREEN if state== "Win" else RED)
         replay.draw(screen)
-        draw_text("You Won!" if state == "Win" else "You Loose!", buttonfont, 400*xScale, 250*yScale, BLACK)
+        draw_text("You Won!" if state == "Win" else "You Lose!", buttonfont, 400*xScale, 250*yScale, BLACK)
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     state = "Quit"
