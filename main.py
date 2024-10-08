@@ -145,9 +145,13 @@ def gameLoop(difficulty):
         #disp lives:
         draw_text("Lives: {}".format(lives), livesFont, 100*xScale, 950*yScale, WHITE)
         #Check if they are ded:
-        if lives == 0: state = "Lost"
+        if lives == 0: 
+            state = "Lost"
+            endScreen()
         #Check if they won
-        if all(brick.exists == False for brick in bricks): state = "Win"
+        if all(brick.exists == False for brick in bricks): 
+            state = "Win"
+            endScreen()
         #Loop through all bricks
         for brick in bricks:
             if brick.exists:
@@ -164,4 +168,20 @@ def gameLoop(difficulty):
 
         clock.tick(100)
         pygame.display.flip()
+def endScreen():
+    global state, xScale, yScale
+    buttonfont = get_scaled_font(200)
+    replay = Button("Replay?", buttonfont, (400*xScale,750*yScale), WHITE, BLACK)
+    while state == "Lost" or state == "Win":
+        screen.fill(GREEN if state== "Win" else RED)
+        replay.draw(screen)
+        draw_text("You Won!" if state == "Win" else "You Loose!", buttonfont, 400*xScale, 250*yScale, BLACK)
+        for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    state = "Quit"
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if replay.isClicked(event):
+                        state = "Start"
+                        startScreen()
+        pygame.display.flip()    
 startScreen()
