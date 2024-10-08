@@ -50,10 +50,10 @@ def startScreen():
     titleFont = get_scaled_font(100)
     buttonFont = get_scaled_font(90)
     #init buttons
-    easyButton = Button("Easy", buttonFont, (screenWidth//2, 3*screenHeight//6), WHITE, BLACK)
-    mediumButton = Button("Medium", buttonFont, (screenWidth//2, 4*screenHeight//6), WHITE, BLACK)
-    hardButton = Button("Hard", buttonFont, (screenWidth//2, 5*screenHeight//6), WHITE, BLACK)
-
+    easyButton = Button("Easy", buttonFont, (screenWidth//2, 3*screenHeight//7), WHITE, BLACK)
+    mediumButton = Button("Medium", buttonFont, (screenWidth//2, 4*screenHeight//7), WHITE, BLACK)
+    hardButton = Button("Hard", buttonFont, (screenWidth//2, 5*screenHeight//7), WHITE, BLACK)
+    settingsButton = Button("Settings", buttonFont, (screenWidth//2, 6*screenHeight//7), WHITE, BLACK)
     while state == "Start":
         #Fill screen w color
         screen.fill(WHITE)
@@ -62,6 +62,7 @@ def startScreen():
         easyButton.draw(screen)
         mediumButton.draw(screen)
         hardButton.draw(screen)
+        settingsButton.draw(screen)
         #Events checker
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -77,30 +78,57 @@ def startScreen():
                 if hardButton.isClicked(event): 
                     difficulty, state = "Hard", "Main"
                     gameLoop(difficulty)
+                if settingsButton.isClicked(event):
+                    state = "Settings"
+                    settings()
         #Update Screen
         clock.tick(60)
         pygame.display.flip()
 
-
-
+#Settings Screen loop______________________
+def settings():
+    buttonFont = get_scaled_font(75)
+    prevSize = Button("<", buttonFont, (200*xScale, 200*yScale), WHITE, BLACK)
+    nextSize = Button(">", buttonFont, (600*xScale, 200*yScale), WHITE, BLACK)
+    
 #Main Game Loop________________________________________________
 def gameLoop(difficulty):
     global state, xScale, yScale
+    #Generate Original ball and paddle 
     offsetFromBottom = 100*yScale #Offset of paddle from bottom of screen (Like everything else this will be scaled)
     paddleWidth, paddleHeight = 100 * xScale, 25*xScale 
     paddle = Paddle((screenWidth/2)-(paddleWidth/2),screenHeight-offsetFromBottom, paddleWidth, paddleHeight, WHITE, 10*xScale, screenWidth ) #x, y, width, height, color, speed, screenWidth
     ballRad = 15* (xScale+yScale)/2
     ball = Ball((screenWidth/2)-(paddleWidth/2),screenHeight-(offsetFromBottom*2), ballRad, BLUE, xScale, yScale)
     bricks = generateBricks(difficulty)
+    #Set lives value
+    if difficulty == "Easy": lives = 5
+    elif difficulty == "Medium": lives = 4
+    elif difficulty == "Hard": lives = 3
+    #initialize lives font
+    livesFont = get_scaled_font(25)
     while state == "Main":
         screen.fill(BLACK)
         #Paddle movement and display
         paddle.move()
         paddle.display(screen)
         #Ball movement and display
-        ball.collision(paddle)
-        ball.move()
-        ball.display(screen)
+        ball.exists = ball.checkOutOfBounds()
+        #Ball function called based on its existance
+        if ball.exists:
+            ball.collision(paddle)
+            ball.move()
+            ball.display(screen)
+        else:
+            lives-=1
+            ball = Ball((screenWidth/2)-(paddleWidth/2),screenHeight-(offsetFromBottom*2), ballRad, BLUE, xScale, yScale)
+        #disp lives:
+        draw_text("Lives: {}".format(lives), livesFont, 100*xScale, 950*yScale, WHITE)
+        #Check if they are ded:
+        if lives == 0: state = "Lost"
+        #Check if they won
+        if all(brick.exists == False for brick in bricks): state = "Win"
+        #Loop through all bricks
         for brick in bricks:
             if brick.exists:
                 brick.display(screen)
@@ -110,7 +138,9 @@ def gameLoop(difficulty):
         #Events checker
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                state = "Quit"
+             state = "Quit"
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                for brick in bricks: brick.exists = False
 
         clock.tick(100)
         pygame.display.flip()
