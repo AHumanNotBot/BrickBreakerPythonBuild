@@ -1,0 +1,1 @@
+There are two charges with charge q, charge A and charge b. The electrostatic force of A on B is Fe. What is equal to the distance between the two charges? | kq^2/Fe | sqrt(kq^2/Fe) | sqrt(Fe/(kq^2) | Fe/(kq)^2 | 2

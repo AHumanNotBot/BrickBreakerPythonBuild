@@ -3,6 +3,7 @@ from button import Button
 from paddle import Paddle
 from ball import Ball
 from brick import Brick
+from question import Question
 pygame.init()
 #Initialize Shit
 screenHeight, screenWidth = 1000, 800
@@ -39,14 +40,19 @@ def generateBricks(difficulty):
     #collumbs = 10 rows depend on numBricks
     for i in range(numBricks//8):
         for j in range(8):
-            bricks.append(Brick((j*100*xScale)+(2*xScale), (i*50*yScale)+(5*yScale*i), 92*xScale, 50*yScale, color, borderCol))
+            if((i*8+j in [1,6,8,10,13,15,17,22,33,38,40,42,45,47,49,54])):
+                bricks.append(
+                    Brick((j * 100 * xScale) + (2 * xScale), (i * 50 * yScale) + (5 * yScale * i), 92 * xScale,
+                          50 * yScale, color, borderCol, containsPowerup=True))
+            else:
+                bricks.append(Brick((j*100*xScale)+(2*xScale), (i*50*yScale)+(5*yScale*i), 92*xScale, 50*yScale, color, borderCol))
     return bricks
 
 
 
 #Start screen loop __________________________________
 def startScreen():
-    global state
+    global state, lives, bricks
     #Make the scaled fonts
     titleFont = get_scaled_font(100)
     buttonFont = get_scaled_font(90)
@@ -55,6 +61,7 @@ def startScreen():
     mediumButton = Button("Medium", buttonFont, (screenWidth//2, 4*screenHeight//7), WHITE, BLACK)
     hardButton = Button("Hard", buttonFont, (screenWidth//2, 5*screenHeight//7), WHITE, BLACK)
     settingsButton = Button("Settings", buttonFont, (screenWidth//2, 6*screenHeight//7), WHITE, BLACK)
+
     while state == "Start":
         #Fill screen w color
         screen.fill(WHITE)
@@ -72,12 +79,18 @@ def startScreen():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if easyButton.isClicked(event): 
                     difficulty, state = "Easy", "Main"
+                    lives = 5
+                    bricks = generateBricks(difficulty)
                     gameLoop(difficulty)
                 if mediumButton.isClicked(event): 
                     difficulty, state = "Medium", "Main"
+                    lives = 4
+                    bricks = generateBricks(difficulty)
                     gameLoop(difficulty)
                 if hardButton.isClicked(event): 
                     difficulty, state = "Hard", "Main"
+                    lives = 3
+                    bricks = generateBricks(difficulty)
                     gameLoop(difficulty)
                 if settingsButton.isClicked(event):
                     state = "Settings"
@@ -113,18 +126,16 @@ def settings():
         pygame.display.flip()
 #Main Game Loop________________________________________________
 def gameLoop(difficulty):
-    global state, xScale, yScale, ballSpeed
+    global state, xScale, yScale, ballSpeed, lives, bricks
+    buttonFont = get_scaled_font(100)
     #Generate Original ball and paddle 
     offsetFromBottom = 100*yScale #Offset of paddle from bottom of screen (Like everything else this will be scaled)
     paddleWidth, paddleHeight = 100 * xScale, 25*xScale 
     paddle = Paddle((screenWidth/2)-(paddleWidth/2),screenHeight-offsetFromBottom, paddleWidth, paddleHeight, WHITE, ballSpeed*xScale, screenWidth ) #x, y, width, height, color, speed, screenWidth
     ballRad = 15* (xScale+yScale)/2
     ball = Ball((screenWidth/2)-(paddleWidth/2),screenHeight-(offsetFromBottom*2), ballRad, BLUE, xScale, yScale, ballSpeed)
-    bricks = generateBricks(difficulty)
+
     #Set lives value
-    if difficulty == "Easy": lives = 5
-    elif difficulty == "Medium": lives = 4
-    elif difficulty == "Hard": lives = 3
     #initialize lives font
     livesFont = get_scaled_font(25)
     while state == "Main":
@@ -134,6 +145,74 @@ def gameLoop(difficulty):
         paddle.display(screen)
         #Ball movement and display
         ball.exists = ball.checkOutOfBounds()
+        # Loop through all bricks
+        for brick in bricks:
+            if brick.exists:
+                brick.display(screen)
+                if brick.collision(ball):
+                    if brick.containsPowerup:
+                        state = "Question"
+                    ball.bounce()
+                    brick.exists = False
+        while state == "Question":
+            screen.fill(WHITE)
+            q = Question()
+            q.chooseQuestion()
+            madechoice = False
+            correct = False
+            while not madechoice:
+                draw_text(q.question, get_scaled_font(100), screenWidth//2, screenHeight//5, BLACK)
+                c1 = Button(q.choice1,buttonFont, (screenWidth//5, 5*screenHeight//7), WHITE, BLACK)
+                c2 = Button(q.choice2, buttonFont, (2* screenWidth // 5, 5 * screenHeight // 7), WHITE, BLACK)
+                c3 = Button(q.choice3, buttonFont, (3*screenWidth // 5, 5 * screenHeight // 7), WHITE, BLACK)
+                c4 = Button(q.choice4, buttonFont, (4*screenWidth // 5, 5 * screenHeight // 7), WHITE, BLACK)
+                c1.draw(screen)
+                c2.draw(screen)
+                c3.draw(screen)
+                c4.draw(screen)
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        state = "Quit"
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if c1.isClicked(event):
+                            if q.correctAnswer == 1:
+                                correct = True
+                            madechoice = True
+                        if c2.isClicked(event):
+                            if q.correctAnswer == 2:
+                                correct = True
+                            madechoice = True
+                        if c3.isClicked(event):
+                            if q.correctAnswer == 3:
+                                correct = True
+                            madechoice = True
+                        if c4.isClicked(event):
+                            if q.correctAnswer == 4:
+                                correct = True
+                            madechoice = True
+                pygame.display.flip()
+            while madechoice:
+                if correct:
+                    screen.fill(GREEN)
+                    draw_text("Correct!", get_scaled_font(100), screenWidth // 2, screenHeight // 5, BLACK)
+                    draw_text("+1 Life", get_scaled_font(100), screenWidth // 2, 2*screenHeight // 5, BLACK)
+                else:
+                    screen.fill(RED)
+                    draw_text("Wrong!", get_scaled_font(100), screenWidth // 2, screenHeight // 5, BLACK)
+                    draw_text("-1 Life", get_scaled_font(100), screenWidth // 2, 2*screenHeight // 5, BLACK)
+                continueButton = Button("Continue", buttonFont, (screenWidth // 2, 3*screenHeight // 5), WHITE, BLACK)
+                continueButton.draw(screen)
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        state = "Quit"
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if continueButton.isClicked(event):
+                            if correct: lives += 1;
+                            else: lives -= 1;
+                            state = "Main"
+                            gameLoop(difficulty)
+                pygame.display.flip()
+
         #Ball function called based on its existance
         if ball.exists:
             ball.collision(paddle)
@@ -152,19 +231,11 @@ def gameLoop(difficulty):
         if all(brick.exists == False for brick in bricks): 
             state = "Win"
             endScreen()
-        #Loop through all bricks
-        for brick in bricks:
-            if brick.exists:
-                brick.display(screen)
-                if brick.collision(ball): 
-                    ball.bounce()
-                    brick.exists = False
+
         #Events checker
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
              state = "Quit"
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                for brick in bricks: brick.exists = False
 
         clock.tick(100)
         pygame.display.flip()
