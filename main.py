@@ -22,8 +22,8 @@ def get_scaled_font(scale_factor=10):
     font_size = int(scale_factor * ((yScale+xScale)/2))
     return pygame.font.SysFont(None, font_size)
 #Display text to screen 
-def draw_text(text: str, font: pygame.font.Font, x: int, y: int, color: tuple, rectColor = WHITE, rect = False) :
-    textObj = font.render(text, True, color)
+def draw_text(text: str, font: pygame.font.Font, x: int, y: int, color: tuple, rectColor = WHITE, rect = False, wrap=0) :
+    textObj = font.render(text, True, color ,wraplength=wrap)
     rectCoords = textObj.get_rect(center=(x,y))
     if rect:
         rectObj = pygame.draw.rect(screen, rectColor, rectCoords, rectCoords.width)
@@ -161,7 +161,7 @@ def gameLoop(difficulty):
             madechoice = False
             correct = False
             while not madechoice:
-                draw_text(q.question, get_scaled_font(100), screenWidth//2, screenHeight//5, BLACK)
+                draw_text(q.question, get_scaled_font(75), screenWidth//2, screenHeight//5, BLACK, wrap=700)
                 c1 = Button(q.choice1,buttonFont, (screenWidth//5, 5*screenHeight//7), WHITE, BLACK)
                 c2 = Button(q.choice2, buttonFont, (2* screenWidth // 5, 5 * screenHeight // 7), WHITE, BLACK)
                 c3 = Button(q.choice3, buttonFont, (3*screenWidth // 5, 5 * screenHeight // 7), WHITE, BLACK)
