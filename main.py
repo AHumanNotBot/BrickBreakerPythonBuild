@@ -21,9 +21,39 @@ def get_scaled_font(scale_factor=10):
     global yScale,xScale
     font_size = int(scale_factor * ((yScale+xScale)/2))
     return pygame.font.SysFont(None, font_size)
+
+def render_text(text: str, font: pygame.font.Font, color: tuple, wrap=0):
+    if not wrap:
+        return font.render(text, True, color)
+
+    lines = []
+    current_line = ""
+    for word in text.split():
+        test_line = word if current_line == "" else current_line + " " + word
+        if font.size(test_line)[0] <= wrap:
+            current_line = test_line
+        else:
+            if current_line:
+                lines.append(current_line)
+            current_line = word
+    if current_line:
+        lines.append(current_line)
+
+    rendered_lines = [font.render(line, True, color) for line in lines]
+    width = max(line.get_width() for line in rendered_lines)
+    height = sum(line.get_height() for line in rendered_lines)
+    surface = pygame.Surface((width, height), pygame.SRCALPHA)
+
+    y = 0
+    for line in rendered_lines:
+        surface.blit(line, ((width - line.get_width()) // 2, y))
+        y += line.get_height()
+
+    return surface
+
 #Display text to screen 
 def draw_text(text: str, font: pygame.font.Font, x: int, y: int, color: tuple, rectColor = WHITE, rect = False, wrap=0) :
-    textObj = font.render(text, True, color ,wraplength=wrap)
+    textObj = render_text(text, font, color, wrap)
     rectCoords = textObj.get_rect(center=(x,y))
     if rect:
         rectObj = pygame.draw.rect(screen, rectColor, rectCoords, rectCoords.width)
@@ -162,10 +192,11 @@ def gameLoop(difficulty):
             correct = False
             while not madechoice:
                 draw_text(q.question, get_scaled_font(75), screenWidth//2, screenHeight//5, BLACK, wrap=700)
-                c1 = Button(q.choice1,buttonFont, (screenWidth//5, 5*screenHeight//7), WHITE, BLACK)
-                c2 = Button(q.choice2, buttonFont, (2* screenWidth // 5, 5 * screenHeight // 7), WHITE, BLACK)
-                c3 = Button(q.choice3, buttonFont, (3*screenWidth // 5, 5 * screenHeight // 7), WHITE, BLACK)
-                c4 = Button(q.choice4, buttonFont, (4*screenWidth // 5, 5 * screenHeight // 7), WHITE, BLACK)
+                choiceButtonSize = (300 * xScale, 165 * yScale)
+                c1 = Button(q.choice1, buttonFont, (screenWidth//4, 13*screenHeight//20), WHITE, BLACK, choiceButtonSize, 24)
+                c2 = Button(q.choice2, buttonFont, (3*screenWidth//4, 13*screenHeight//20), WHITE, BLACK, choiceButtonSize, 24)
+                c3 = Button(q.choice3, buttonFont, (screenWidth//4, 17*screenHeight//20), WHITE, BLACK, choiceButtonSize, 24)
+                c4 = Button(q.choice4, buttonFont, (3*screenWidth//4, 17*screenHeight//20), WHITE, BLACK, choiceButtonSize, 24)
                 c1.draw(screen)
                 c2.draw(screen)
                 c3.draw(screen)

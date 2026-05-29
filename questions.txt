@@ -1,1 +1,2 @@
-There are two charges with charge q, charge A and charge b. The electrostatic force of A on B is Fe. What is equal to the distance between the two charges? | kq^2/Fe | sqrt(kq^2/Fe) | sqrt(Fe/(kq^2) | Fe/(kq)^2 | 2
+There are two charges with charge q, charge A and charge b. The electrostatic force of A on B is Fe. What is equal to the distance between the two charges? | $\frac{kq^{2}}{F_{e}}$ | $\sqrt{\frac{kq^{2}}{F_{e}}}$ | $\sqrt{\frac{F_{e}}{kq^{2}}}$ | $\frac{F_{e}}{\left(kq\right)^{2}}$ | 2
+A circular wire has a length of L and radius R. The current density J = sin(R). What expression is equal to the current of the wire? | $-2\pi\cos(L)+2\pi$ | $-2\pi R\cos(R)+2\pi R$ | $-2\pi R\cos(R)+2\pi\sin(R)+2\pi R$ | $-2\pi L\cos(R)+2\pi\sin(R)+2\pi R$ | 3

@@ -10,11 +10,12 @@ class Question:
         self.correctAnswer = 0
     def chooseQuestion(self):
         question = random.choice(self.questions)
-        self.question = question.split("|")[0]
-        self.choice1 = question.split("|")[1]
-        self.choice2 = question.split("|")[2]
-        self.choice3 = question.split("|")[3]
-        self.choice4 = question.split("|")[4]
-        self.correctAnswer = int(question.split("|")[5])
+        parts = [part.strip() for part in question.split("|")]
+        self.question = parts[0]
+        self.choice1 = parts[1]
+        self.choice2 = parts[2]
+        self.choice3 = parts[3]
+        self.choice4 = parts[4]
+        self.correctAnswer = int(parts[5])
 
 
