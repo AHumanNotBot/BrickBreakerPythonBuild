@@ -1,4 +1,5 @@
 import pygame
+import sys
 from button import Button
 from paddle import Paddle
 from ball import Ball
@@ -15,6 +16,10 @@ ballSpeed = 10
 WHITE, BLACK, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA, GRAY, ORANGE, PURPLE, BROWN = (255, 255, 255), (0, 0, 0), (255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (0, 255, 255), (255, 0, 255), (128, 128, 128), (255, 165, 0), (128, 0, 128), (165, 42, 42)
 #Calculate scale difference based on distance from default size (1000, 800)
 xScale, yScale = screenWidth/800, screenHeight/1000
+
+def quit_game():
+    pygame.quit()
+    sys.exit()
 
 # Calculate font size dynamically based on screen height (GPT code)
 def get_scaled_font(scale_factor=10):
@@ -104,7 +109,7 @@ def startScreen():
         #Events checker
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                state = "Quit"
+                quit_game()
             #If click on a button, change the difficulty, state and then call the main game loop
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if easyButton.isClicked(event): 
@@ -144,7 +149,7 @@ def settings():
         draw_text("Ball Speed: {}".format(ballSpeed), buttonFont, 400*xScale, 400*yScale, BLACK, True)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                state = "Quit"
+                quit_game()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if apply.isClicked(event): 
                     state = "Start"
@@ -191,7 +196,7 @@ def gameLoop(difficulty):
             madechoice = False
             correct = False
             while not madechoice:
-                draw_text(q.question, get_scaled_font(75), screenWidth//2, screenHeight//5, BLACK, wrap=700)
+                draw_text(q.question, get_scaled_font(55), screenWidth//2, screenHeight//4, BLACK, wrap=700)
                 choiceButtonSize = (300 * xScale, 165 * yScale)
                 c1 = Button(q.choice1, buttonFont, (screenWidth//4, 13*screenHeight//20), WHITE, BLACK, choiceButtonSize, 24)
                 c2 = Button(q.choice2, buttonFont, (3*screenWidth//4, 13*screenHeight//20), WHITE, BLACK, choiceButtonSize, 24)
@@ -203,7 +208,7 @@ def gameLoop(difficulty):
                 c4.draw(screen)
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
-                        state = "Quit"
+                        quit_game()
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if c1.isClicked(event):
                             if q.correctAnswer == 1:
@@ -235,7 +240,7 @@ def gameLoop(difficulty):
                 continueButton.draw(screen)
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
-                        state = "Quit"
+                        quit_game()
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if continueButton.isClicked(event):
                             if correct: lives += 1;
@@ -266,7 +271,7 @@ def gameLoop(difficulty):
         #Events checker
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-             state = "Quit"
+             quit_game()
 
         clock.tick(100)
         pygame.display.flip()
@@ -280,10 +285,11 @@ def endScreen():
         draw_text("You Won!" if state == "Win" else "You Lose!", buttonfont, 400*xScale, 250*yScale, BLACK)
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    state = "Quit"
+                    quit_game()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if replay.isClicked(event):
                         state = "Start"
                         startScreen()
         pygame.display.flip()    
-startScreen()
+if __name__ == "__main__":
+    startScreen()

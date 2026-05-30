@@ -1,4 +1,14 @@
 import random
+import sys
+from pathlib import Path
+
+
+def resource_path(filename):
+    if hasattr(sys, "_MEIPASS"):
+        return Path(sys._MEIPASS) / filename
+    return Path(__file__).resolve().parent / filename
+
+
 class Question:
     def __init__(self, questionText = "", choice1 = "", choice2 = "", choice3 = "", choice4 = ""):
         self.questionText = questionText
@@ -6,7 +16,7 @@ class Question:
         self.choice2 = choice2
         self.choice3 = choice3
         self.choice4 = choice4
-        self.questions = open("questions.txt", "r").readlines()
+        self.questions = resource_path("questions.txt").read_text().splitlines()
         self.correctAnswer = 0
     def chooseQuestion(self):
         question = random.choice(self.questions)

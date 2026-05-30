@@ -18,8 +18,16 @@ class Ball:
         if self.pos[1] <= 0+self.radius:
             self.yVelocity = -self.yVelocity
         #collision with paddle
-        if pygame.Rect.colliderect(pygame.Rect(self.pos[0], self.pos[1], self.radius, self.radius), paddle.getRect()):
-            self.yVelocity = -self.yVelocity
+        ballRect = pygame.Rect(
+            self.pos[0] - self.radius,
+            self.pos[1] - self.radius,
+            self.radius * 2,
+            self.radius * 2
+        )
+        paddleRect = paddle.getRect()
+        if self.yVelocity > 0 and pygame.Rect.colliderect(ballRect, paddleRect):
+            self.pos = (self.pos[0], paddleRect.top - self.radius)
+            self.yVelocity = -abs(self.yVelocity)
     def bounce(self):
         self.yVelocity = -self.yVelocity
     def checkOutOfBounds(self):
